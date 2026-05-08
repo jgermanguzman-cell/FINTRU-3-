@@ -9,7 +9,6 @@ function onEdit(e) {
   const fila = range.getRow();
 
   // 1. DELEGAR FECHAS (TIMESTAMPS)
-  // Ignoramos encabezados o selecciones múltiples para las fechas
   if (fila > 1 && range.getHeight() === 1 && range.getWidth() === 1) {
     ejecutarTimestamps(e, sheetName, fila, columna);
   }
@@ -20,13 +19,15 @@ function onEdit(e) {
     aplicarFormatosMonedaFintru();
   }
 
-  // Revisar si se cambió la moneda global
   try {
     const rangoGlobal = e.source.getRangeByName('conf_MonedaGlobal');
     if (rangoGlobal && range.getA1Notation() === rangoGlobal.getA1Notation()) {
       aplicarFormatosMonedaFintru();
     }
-  } catch (err) {
-    // Falla silenciosa si no existe el rango
+  } catch (err) {}
+
+  // 3. DELEGAR VALIDACIONES DEPENDIENTES (Naturaleza → Categoría → Etiqueta)
+  if (fila > 1 && range.getHeight() === 1 && range.getWidth() === 1) {
+    ejecutarValidacionesDependientes(e, sheetName, fila, columna);
   }
 }
